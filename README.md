@@ -11,12 +11,12 @@ The vision of this project is to empower developers to perform basic CRUD operat
 - [Update Data (`update.php`)](#update-data)
 - [Delete Data (`delete.php`)](#delete-data)
 - [File Upload (`file-upload.php`)](#file-upload-file)
-- [Customization and Security](#customization)
-- [Credits, Message from creator](#credits)
+- [Customization and Security](#customization-security)
+- [Credits, Message from Creator](#credits)
 
 ---
 
-## 1. Introduction
+## 1. Introduction <a name="introduction"></a>
 
 This documentation provides an overview of a set of PHP scripts designed for basic CRUD operations (Create, Read, Update, Delete) and file uploads. The scripts are intended to be used as an API for managing data in a relational database.
 
@@ -24,7 +24,7 @@ This project provides a set of PHP scripts designed to serve as a simple API for
 
 ---
 
-## 2. Connection Configuration
+## 2. Connection Configuration <a name="connection-configuration"></a>
 
 Before using the scripts, ensure that the database connection is properly configured. The connection details can be found in the `configuration/connection.php` file. Modify the file to set your database host, username, password, and database name.
 
@@ -39,7 +39,7 @@ $database = "your_database";
 
 ---
 
-## 3. Create Data (create.php)
+## 3. Create Data (create.php) <a name="create-data"></a>
 
 Description:
 This script handles the creation of new records in the database based on the provided JSON data.
@@ -90,7 +90,7 @@ The `validation` is used to validate the data based on the provided rules. The f
 
 ---
 
-## 4. Read Data (read.php)
+## 4. Read Data (read.php) <a name="read-data"></a>
 
 Description:
 This script retrieves data from the database based on the specified parameters.
@@ -169,7 +169,7 @@ Note: You'll have to mention each table name along with the column name to use `
 
 ---
 
-## 5. Update Data (update.php)
+## 5. Update Data (update.php) <a name="update-data"></a>
 
 Description:
 This script updates existing records in the database based on the specified parameters.
@@ -203,7 +203,7 @@ This script updates existing records in the database based on the specified para
 
 ---
 
-## 6. Delete Data (delete.php)
+## 6. Delete Data (delete.php) <a name="delete-data"></a>
 
 Description:
 This script deletes records from the database based on the specified parameters.
@@ -230,7 +230,7 @@ This script deletes records from the database based on the specified parameters.
 
 ---
 
-## 7. File Upload (file-upload.php)
+## 7. File Upload (file-upload.php) <a name="file-upload"></a>
 
 Description:
 This script handles the uploading of files to a specified destination.
@@ -285,7 +285,7 @@ Note: Customize and extend the scripts based on your project's requirements. Ens
 
 ---
 
-## 8. Customization and Security
+## 8. Customization and Security <a name="customization-security"></a>
 
 For additional security measures or custom logic, developers can extend the functionality by adding their own logic to the `configuration/custom-functions.php` file. This provides a space to incorporate token validation, custom authentication, or any other security measures according to project requirements.
 
@@ -303,7 +303,7 @@ For additional security measures or custom logic, developers can extend the func
 
 ---
 
-## Credits:
+## 9. Credits: <a name="credits"></a>
 
 This project was developed by [Imdadullah Babu](https://imdos.in), The scripts aim to provide a foundation for PHP developers to integrate basic database operations and file uploads into their projects without writing repeatable codes.
 
