@@ -10,7 +10,7 @@ The vision of this project is to empower developers to perform basic CRUD operat
 - [Read Data (`read.php`)](#read-data)
 - [Update Data (`update.php`)](#update-data)
 - [Delete Data (`delete.php`)](#delete-data)
-- [File Upload (`file-upload.php`)](#file-upload-file)
+- [File Upload (`file-upload.php`)](#file-upload)
 - [Customization and Security](#customization-security)
 - [Credits, Message from Creator](#credits)
 
