@@ -100,7 +100,8 @@ This script retrieves data from the database based on the specified parameters.
 - `table` (required): The name of the database table to query.
 - `select` (optional): An array of columns to select. Default is all columns (\*).
 - `join` (optional): An array of join clauses for performing joins.
-- `conditions` (optional): An array of conditions for filtering data.
+- `conditions` (optional): An array of conditions with object with `on`, `type` and `value` for filtering data.
+- `order` (optional): An object with `on` and `type` for ordering data.
 - `limit` (optional): Limit the number of records returned.
 
 #### Example `body` in API request
@@ -109,6 +110,7 @@ This script retrieves data from the database based on the specified parameters.
 {
   "table": "users",
   "select": ["id", "name", "email", "age"],
+  "order": { "on": "id", "type": "DESC" },
   "conditions": [
     {
       "on": "age",

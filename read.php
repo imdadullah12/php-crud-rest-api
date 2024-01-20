@@ -39,8 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conditions = isset($requestData['conditions']) ? buildWhereClause($requestData['conditions']) : '';
         $limit = isset($requestData['limit']) ? 'LIMIT ' . $requestData['limit'] : '';
+        $order = isset($requestData['order']) ? 'ORDER BY ' . $requestData['order']['on'] . ' ' . strtoupper($requestData['order']['type']) : '';
 
-        $sql = "SELECT $select FROM $table $join $conditions $limit";
+        $sql = "SELECT $select FROM $table $join $conditions $order $limit";
 
         // Execute the query
         $result = $conn->query($sql);
