@@ -31,10 +31,10 @@ Before using the scripts, ensure that the database connection is properly config
 Example `configuration/connection.php`:
 
 ```php
-$host = "your_host";
-$username = "your_username";
-$password = "your_password";
-$database = "your_database";
+define('DB_SERVER', 'YOUR_HOSTNAME');
+define('DB_USERNAME', 'YOUR_USERNAME');
+define('DB_PASSWORD', 'YOUR_PASSWORD');
+define('DB_NAME', 'YOUR_DATABASE');
 ```
 
 ---
