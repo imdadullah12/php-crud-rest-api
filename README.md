@@ -65,7 +65,7 @@ The `validation` is used to validate the data based on the provided rules. The f
 #### Example `body` in API request
 
 ```json
-{{
+{
   "table": "users",
   "validation": [
     {
