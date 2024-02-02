@@ -17,43 +17,53 @@ require('configuration/custom-functions.php');
 
 // Check if the request is a POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the JSON data from the request body
-    $requestData = json_decode(file_get_contents('php://input'), true);
+    // Begin a database transaction
+    $conn->autocommit(false);
 
-    // Check if the required parameters are present
-    if (isset($requestData['table'])) {
-        // Check if the 'conditions' parameter is present
-        if (isset($requestData['conditions'])) {
-            // Build the SQL query based on the request parameters
-            $table = $requestData['table'];
-            $conditions = buildWhereClause($requestData['conditions']);
+    try {
+        // Get the JSON data from the request body
+        $requestData = json_decode(file_get_contents('php://input'), true);
 
-            $sql = "DELETE FROM $table $conditions";
+        // Check if the required parameters are present
+        if (isset($requestData['table'])) {
+            // Check if the 'conditions' parameter is present
+            if (isset($requestData['conditions'])) {
+                // Build the SQL query based on the request parameters
+                $table = $requestData['table'];
+                $conditions = buildWhereClause($requestData['conditions']);
 
-            // Execute the query
-            $result = $conn->query($sql);
+                $sql = "DELETE FROM $table $conditions";
 
-            // Check if the query was successful
-            if ($result) {
-                http_response_code(200); // OK
-                echo json_encode(['status' => 'success', 'message' => 'Data deleted successfully']);
+                // Execute the query
+                $result = $conn->query($sql);
+
+                // Check if the query was successful
+                if ($result) {
+                    // Commit the transaction if everything is successful
+                    $conn->commit();
+                    http_response_code(200); // OK
+                    echo json_encode(['status' => 'success', 'message' => 'Data deleted successfully']);
+                } else {
+                    throw new Exception('Delete query failed');
+                }
             } else {
-                // Return an error message
-                http_response_code(500); // Internal Server Error
-                echo json_encode(['status' => 'error', 'message' => 'Delete query failed']);
+                // Return an error if the 'conditions' parameter is missing
+                throw new Exception('Missing required parameter: conditions');
             }
-
-            // Close the database connection
-            $conn->close();
         } else {
-            // Return an error if the 'conditions' parameter is missing
-            http_response_code(400); // Bad Request
-            echo json_encode(['status' => 'error', 'message' => 'Missing required parameter: conditions']);
+            // Return an error if the 'table' parameter is missing
+            throw new Exception('Missing required parameter: table');
         }
-    } else {
-        // Return an error if the 'table' parameter is missing
-        http_response_code(400); // Bad Request
-        echo json_encode(['status' => 'error', 'message' => 'Missing required parameter: table']);
+    } catch (Exception $e) {
+        // Rollback the transaction on any exception
+        $conn->rollback();
+        http_response_code(500); // Internal Server Error
+        echo json_encode(['status' => 'error', 'message' => 'Internal Server Error: ' . $e->getMessage()]);
+    } finally {
+        // Enable autocommit after the try-catch block
+        $conn->autocommit(true);
+        // Close the database connection
+        $conn->close();
     }
 } else {
     // Return an error if the request method is not POST

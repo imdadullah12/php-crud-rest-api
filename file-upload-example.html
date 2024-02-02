@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Upload Page</title>
+  </head>
+  <body>
+    <form enctype="multipart/form-data">
+      <label for="file">Select File:</label>
+      <input
+        type="file"
+        id="file"
+        name="file"
+        accept=".jpg, .jpeg, .png, .pdf"
+      /><br />
+
+      <label for="image">Select Image:</label>
+      <input
+        type="file"
+        id="image"
+        name="image"
+        accept=".jpg, .jpeg, .png"
+      /><br />
+
+      <button type="button" id="button">Upload</button>
+    </form>
+
+    <script>
+      const uploadButton = document.getElementById("button");
+
+      uploadButton.addEventListener("click", async function () {
+        const fileInput = document.getElementById("file");
+        const imageInput = document.getElementById("image");
+
+        const file = fileInput.files[0];
+        const image = imageInput.files[0];
+
+        const formData = new FormData();
+        formData.append("home", file);
+        formData.append("profile", image);
+        formData.append("table", "users");
+        formData.append("reference", ["id", "6"]);
+        formData.append("destination", "Files");
+        formData.append("validation", ["jpg", "png", "pdf"]);
+
+        const request = await fetch("YOUR_ENDPOINT/file-upload.php", {
+          method: "POST",
+          body: formData,
+        });
+
+        const response = await request.json();
+        console.log(response);
+      });
+    </script>
+  </body>
+</html>

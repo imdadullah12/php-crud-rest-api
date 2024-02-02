@@ -101,6 +101,7 @@ This script retrieves data from the database based on the specified parameters.
 - `select` (optional): An array of columns to select. Default is all columns (\*).
 - `join` (optional): An array of join clauses for performing joins.
 - `conditions` (optional): An array of conditions with object with `on`, `type` and `value` for filtering data.
+- `rawConditions` (optional): An array of raw conditions for filtering data (Use only one between `conditions` and `rawConditions`).
 - `order` (optional): An object with `on` and `type` for ordering data.
 - `limit` (optional): Limit the number of records returned.
 
@@ -241,6 +242,8 @@ This script handles the uploading of files to a specified destination.
 
 - `destination` (required): The directory where the files will be stored.
 - `validation` (required): A comma-separated list of allowed file extensions.
+- `table` (optional): Table name where the files path will be saved
+- `reference` (optional) (required if the table is mentioned): `reference` should be an array with the column name and it's value to save the path of the uploaded files
 
 Note: You can upload multiple files at once, and this will not insert into your database table, You'll get the url as response and you can save it to the database.
 
@@ -260,6 +263,8 @@ Note: You can upload multiple files at once, and this will not insert into your 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("image", image);
+      formData.append("table", "TABLE_NAME"); // After uploading the files the data will update into the table with the mentioned columns
+      formData.append("reference", ['column_name', 'value']); // Give the reference column name and it's ID to update the data
       formData.append("destination", "Files"); // Files will uploaded to the mentioned destination that is 'Files'
       formData.append("validation", ["jpg", "png", "pdf"]);
 
