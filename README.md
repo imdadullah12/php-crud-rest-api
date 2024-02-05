@@ -101,7 +101,7 @@ This script retrieves data from the database based on the specified parameters.
 - `select` (optional): An array of columns to select. Default is all columns (\*).
 - `join` (optional): An array of join clauses for performing joins.
 - `conditions` (optional): An array of conditions with object with `on`, `type` and `value` for filtering data.
-- `rawConditions` (optional): An array of raw conditions for filtering data (Use only one between `conditions` and `rawConditions`).
+- `rawConditions` (optional): An array of raw conditions for filtering data, make you sure pass either `conditions` or `rawConditions`.
 - `order` (optional): An object with `on` and `type` for ordering data.
 - `limit` (optional): Limit the number of records returned.
 
@@ -130,6 +130,19 @@ This script retrieves data from the database based on the specified parameters.
     }
   ],
   "limit": 10
+}
+```
+
+#### Example `body` with `rawConditions` in API request
+
+```json
+{
+  "table": "users",
+  "select": ["id", "name", "email", "age"],
+  "order": { "on": "id", "type": "DESC" },
+  "rawConditions": [
+    "WHERE age >= '18' OR type = 'customer' AND status = 'active'"
+  ]
 }
 ```
 
