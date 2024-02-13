@@ -98,7 +98,7 @@ This script retrieves data from the database based on the specified parameters.
 #### Parameters:
 
 - `table` (required): The name of the database table to query.
-- `select` (optional): An array of columns to select. Default is all columns (\*).
+- `select` (required): An array of columns to select. Default is all columns (\*).
 - `join` (optional): An array of join clauses for performing joins.
 - `conditions` (optional): An array of conditions with object with `on`, `type` and `value` for filtering data.
 - `rawConditions` (optional): An array of raw conditions for filtering data, make you sure pass either `conditions` or `rawConditions`.
@@ -195,6 +195,7 @@ This script updates existing records in the database based on the specified para
 - `table` (required): The name of the database table to query.
 - `data` (required): An array of fields and values to be updated.
 - `conditions` (required): An array of conditions for identifying records to update.
+- `validation` (optional): Validation rules for the data.
 
 #### Example `body` in API request
 
@@ -205,6 +206,12 @@ This script updates existing records in the database based on the specified para
     {
       "name": "Imdadullah Babu",
       "age": 22
+    }
+  ],
+  "validation": [
+    {
+      "name": "required|string",
+      "age": "optional|numeric"
     }
   ],
   "conditions": [

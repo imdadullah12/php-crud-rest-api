@@ -15,70 +15,66 @@ require('configuration/custom-functions.php');
 *******************************************************************
 */
 
-// Check if the request is a POST request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Begin a database transaction
-    $conn->autocommit(false);
+// Check if the request method is POST and content type is JSON
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json') {
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method or content type']);
+    exit;
+}
 
-    try {
-        // Get the JSON data from the request body
-        $requestData = json_decode(file_get_contents('php://input'), true);
+// Disable autocommit for database transactions
+$conn->autocommit(false);
 
-        // Check if the required parameters are present
-        if (isset($requestData['table'])) {
-            // Validate data if validation rules are provided
-            if (isset($requestData['validation']) && isset($requestData['data'])) {
-                $validationResult = validateData($requestData['data'][0], $requestData['validation'][0], $conn, $requestData['table']);
-                if ($validationResult !== null) {
-                    throw new Exception($validationResult);
-                }
-            }
+try {
+    // Decode JSON data from request body
+    $requestData = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
 
-            // Insert data if 'data' parameter is present
-            if (isset($requestData['data'])) {
-                $table = $requestData['table'];
-                $columns = implode(',', array_keys($requestData['data'][0]));
-                $values = [];
-                foreach ($requestData['data'] as $item) {
-                    $values[] = "'" . implode("','", $item) . "'";
-                }
-                $valuesString = implode('),(', $values);
-
-                $sql = "INSERT INTO $table ($columns) VALUES ($valuesString)";
-
-                // Execute the query
-                $result = $conn->query($sql);
-
-                // Check if the query was successful
-                if ($result) {
-                    // Commit the transaction if everything is successful
-                    $conn->commit();
-                    http_response_code(201); // Created
-                    echo json_encode(['status' => 'success', 'message' => 'Data inserted successfully']);
-                } else {
-                    throw new Exception('Query failed');
-                }
-            } else {
-                // Return an error if the 'data' parameter is missing
-                throw new Exception('Missing required parameter: data');
-            }
-        } else {
-            // Return an error if the 'table' parameter is missing
-            throw new Exception('Missing required parameter: table');
-        }
-    } catch (Exception $e) {
-        // Rollback the transaction on any exception
-        $conn->rollback();
-        http_response_code(500); // Internal Server Error
-        echo json_encode(['status' => 'error', 'message' => 'Internal Server Error: ' . $e->getMessage()]);
-    } finally {
-        // Enable autocommit after the try-catch block
-        $conn->autocommit(true);
-        // Close the database connection
-        $conn->close();
+    // Check if 'table' parameter exists in the request data
+    if (!isset($requestData['table'])) {
+        throw new Exception('Missing required parameters: table');
     }
-} else {
-    // Return an error if the request method is not POST
-    http_response_code(405); // Method Not Allowed
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+
+    // Check if 'data' parameter exists in the request data
+    if (!isset($requestData['data'])) {
+        throw new Exception('Missing required parameters: data');
+    }
+
+    // Perform validation if 'validation' parameter exists in the request data
+    if (isset($requestData['validation'])) {
+        $validationResult = validateData($requestData['data'][0], $requestData['validation'][0], $conn, $requestData['table']);
+        if ($validationResult !== null) {
+            throw new Exception($validationResult);
+        }
+    }
+
+    // Prepare SQL query for insertion
+    $table = $requestData['table'];
+    $columns = implode(',', array_keys($requestData['data'][0]));
+    $values = [];
+    foreach ($requestData['data'] as $item) {
+        $values[] = "'" . implode("','", $item) . "'";
+    }
+    $valuesString = implode('),(', $values);
+    $sql = "INSERT INTO $table ($columns) VALUES ($valuesString)";
+
+    // Execute the SQL query
+    $result = $conn->query($sql);
+
+    // If query executed successfully, commit transaction and return success response
+    if ($result) {
+        $conn->commit();
+        http_response_code(201);
+        echo json_encode(['status' => 'success', 'message' => 'Data inserted successfully']);
+    } else {
+        // If query failed, throw an exception
+        throw new Exception('Query failed');
+    }
+} catch (Exception $e) {
+    // Rollback transaction in case of exception and return error response
+    $conn->rollback();
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+} finally {
+    // Close database connection
+    $conn->close();
 }

@@ -15,58 +15,53 @@ require('configuration/custom-functions.php');
 *******************************************************************
 */
 
-// Check if the request is a POST request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Begin a database transaction
-    $conn->autocommit(false);
+// Check if the request method is POST and content type is JSON
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json') {
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method or content type']);
+    exit;
+}
 
-    try {
-        // Get the JSON data from the request body
-        $requestData = json_decode(file_get_contents('php://input'), true);
+// Disable autocommit for database transactions
+$conn->autocommit(false);
 
-        // Check if the required parameters are present
-        if (isset($requestData['table'])) {
-            // Check if the 'conditions' parameter is present
-            if (isset($requestData['conditions'])) {
-                // Build the SQL query based on the request parameters
-                $table = $requestData['table'];
-                $conditions = buildWhereClause($requestData['conditions']);
+try {
+    // Decode JSON data from request body
+    $requestData = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
 
-                $sql = "DELETE FROM $table $conditions";
-
-                // Execute the query
-                $result = $conn->query($sql);
-
-                // Check if the query was successful
-                if ($result) {
-                    // Commit the transaction if everything is successful
-                    $conn->commit();
-                    http_response_code(200); // OK
-                    echo json_encode(['status' => 'success', 'message' => 'Data deleted successfully']);
-                } else {
-                    throw new Exception('Delete query failed');
-                }
-            } else {
-                // Return an error if the 'conditions' parameter is missing
-                throw new Exception('Missing required parameter: conditions');
-            }
-        } else {
-            // Return an error if the 'table' parameter is missing
-            throw new Exception('Missing required parameter: table');
-        }
-    } catch (Exception $e) {
-        // Rollback the transaction on any exception
-        $conn->rollback();
-        http_response_code(500); // Internal Server Error
-        echo json_encode(['status' => 'error', 'message' => 'Internal Server Error: ' . $e->getMessage()]);
-    } finally {
-        // Enable autocommit after the try-catch block
-        $conn->autocommit(true);
-        // Close the database connection
-        $conn->close();
+    // Check if 'table' parameter exists in the request data
+    if (!isset($requestData['table'])) {
+        throw new Exception('Missing required parameters: table');
     }
-} else {
-    // Return an error if the request method is not POST
-    http_response_code(405); // Method Not Allowed
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+
+    // Check if 'conditions' parameter exists in the request data
+    if (!isset($requestData['conditions'])) {
+        throw new Exception('Missing required parameters: conditions');
+    }
+
+    // Prepare SQL query for deletion
+    $table = $requestData['table'];
+    $conditions = buildWhereClause($requestData['conditions']);
+
+    $sql = "DELETE FROM $table $conditions";
+
+    // Execute the SQL query
+    $result = $conn->query($sql);
+
+    // If query executed successfully, commit transaction and return success response
+    if ($result) {
+        $conn->commit();
+        http_response_code(200);
+        echo json_encode(['status' => 'success', 'message' => 'Data deleted successfully']);
+    } else {
+        throw new Exception('Delete query failed');
+    }
+} catch (Exception $e) {
+    // Rollback the transaction on any exception
+    $conn->rollback();
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+} finally {
+    // Close the database connection
+    $conn->close();
 }
