@@ -260,10 +260,8 @@ This script handles the uploading of files to a specified destination.
 
 #### Parameters:
 
-- `destination` (required): The directory where the files will be stored.
-- `validation` (required): A comma-separated list of allowed file extensions.
-- `table` (optional): Table name where the files path will be saved
-- `reference` (optional) (required if the table is mentioned): `reference` should be an array with the column name and it's value to save the path of the uploaded files
+- `fileDestination` (required): The directory where the files will be stored.
+- `fileValidation` (required): A comma-separated list of allowed file extensions.
 
 Note: You can upload multiple files at once, and this will not insert into your database table, You'll get the url as response and you can save it to the database.
 
@@ -283,10 +281,8 @@ Note: You can upload multiple files at once, and this will not insert into your 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("image", image);
-      formData.append("table", "TABLE_NAME"); // After uploading the files the data will update into the table with the mentioned columns
-      formData.append("reference", ['column_name', 'value']); // Give the reference column name and it's ID to update the data
-      formData.append("destination", "Files"); // Files will uploaded to the mentioned destination that is 'Files'
-      formData.append("validation", ["jpg", "png", "pdf"]);
+      formData.append("fileDestination", "Files"); // Files will uploaded to the mentioned destination that is 'Files'
+      formData.append("fileValidation", ["jpg", "png", "pdf"]);
 
       const request = await fetch("YOUR_API_REQUEST_ENDPOINT", {
           method: "POST",
