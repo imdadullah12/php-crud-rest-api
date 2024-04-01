@@ -41,7 +41,7 @@ try {
 
     // Prepare SQL query for deletion
     $table = $requestData['table'];
-    $conditions = buildWhereClause($requestData['conditions']);
+    $conditions = buildWhereClause($conn, $requestData['conditions']);
 
     $sql = "DELETE FROM $table $conditions";
 

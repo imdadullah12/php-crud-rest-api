@@ -12,15 +12,15 @@
 */
 
 // Function to build the WHERE clause of the SQL query
-function buildWhereClause($whereConditions)
+function buildWhereClause($conn, $whereConditions)
 {
     $where = 'WHERE ';
     $conditions = array();
 
     foreach ($whereConditions as $condition) {
-        $on = $condition['on'];
-        $type = $condition['type'];
-        $value = $condition['value'];
+        $on = mysqli_real_escape_string($conn, $condition['on']);
+        $type = mysqli_real_escape_string($conn, $condition['type']);
+        $value = mysqli_real_escape_string($conn, $condition['value']);
 
         // Handle IN condition separately
         if (strtoupper($type) === 'IN') {

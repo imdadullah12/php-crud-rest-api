@@ -55,7 +55,7 @@ try {
     // Prepare SQL query for insertion
     $table = $requestData['table'];
     $dataToUpdate = $requestData['data'][0];
-    $conditions = isset($requestData['conditions']) ? buildWhereClause($requestData['conditions']) : '';
+    $conditions = isset($requestData['conditions']) ? buildWhereClause($conn, $requestData['conditions']) : '';
 
     $values = [];
     foreach ($dataToUpdate as $column => $value) {
