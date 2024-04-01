@@ -55,8 +55,7 @@ try {
     // Check if both conditions passed, build where conditions
     $conditions = isset($requestData['conditions']) ? buildWhereClause($conn, $requestData['conditions']) : '';
     $rawConditions = isset($requestData['rawConditions']) ? implode(' ', $requestData['rawConditions']) : '';
-    // mysqli_real_escape_string($conn, $condition['on']);
-    echo $rawConditions;
+
     // Check if both conditions and rawConditions are passed in the request
     if ($conditions && $rawConditions) {
         throw new Exception('You cannot pass both conditions or rawConditions in the request, use only one of them');
