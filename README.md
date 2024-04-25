@@ -55,12 +55,14 @@ This script handles the creation of new records in the database based on the pro
 The `validation` is used to validate the data based on the provided rules. The following validation rules are available:
 
 - `required`: The field must not be empty.
+- `string`: The field must be a valid string.
+- `name`: The field must be a valid name and without any integer or special characters.
 - `email`: The field must be a valid email format.
 - `numeric`: The field must be numeric.
 - `min-length:X`: The field must be at least X characters long.
 - `max-length:X`: The field must be at most X characters long.
 - `length:X`: The field must be exactly X characters long.
-- `unique`: The field value must be unique within the specified table.
+- `unique`: The field value must be unique within the specified table | It'll check the `id` while updating the record, if it the same then simply it'll update the column.
 
 #### Example `body` in API request
 
@@ -281,7 +283,7 @@ Note: You can upload multiple files at once, and this will not insert into your 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("image", image);
-      formData.append("fileDestination", "Files"); // Files will uploaded to the mentioned destination that is 'Files'
+      formData.append("fileDestination", "files"); // Files will be uploaded to the mentioned destination on the 'uploaded' directory
       formData.append("fileValidation", ["jpg", "png", "pdf"]);
 
       const request = await fetch("YOUR_API_REQUEST_ENDPOINT", {
@@ -299,8 +301,8 @@ Note: You can upload multiple files at once, and this will not insert into your 
 
 ```
 {
-    "file": "Files/2024011984368.jpg",
-    "image": "Files/2024011960039.jpg"
+    "file": "uploads/files/2024011984368.jpg",
+    "image": "uploads/files/2024011960039.jpg"
 }
 ```
 

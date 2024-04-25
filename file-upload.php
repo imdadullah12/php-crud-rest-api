@@ -37,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Check the extension against the validation array
                     if (in_array($fileExt, $allowedExtensions)) {
                         // Create a directory if it does not already exist
-                        if (!is_dir($_POST['fileDestination'])) {
-                            mkdir($_POST['fileDestination'], 0777, true);
+                        if (!is_dir('uploads/' . strtolower($_POST['fileDestination']))) {
+                            mkdir('uploads/' . strtolower($_POST['fileDestination']), 0777, true);
                         }
                         // Prepare the destination of the file
-                        $destination = $_POST['fileDestination'] . '/' . $fileName;
+                        $destination = 'uploads/' . strtolower($_POST['fileDestination']) . '/' . $fileName;
                         // Add the key of the file with the destination path
                         $response[$key] = $destination;
                         // Move the uploaded file to the destination

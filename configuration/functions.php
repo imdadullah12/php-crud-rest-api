@@ -34,15 +34,28 @@ function buildWhereClause($conn, $whereConditions)
 }
 
 // Function to validate data
-function validateData($data, $validationRules, $conn, $table)
+function validateData($data, $validationRules, $conn, $table, $conditions)
 {
     foreach ($validationRules as $key => $rules) {
         $value = isset($data[$key]) ? $data[$key] : null;
+        $ref_id = 0;
         $rules = explode('|', $rules);
+
+        foreach ($conditions as $condition) {
+            $cond_on = mysqli_real_escape_string($conn, $condition['on']);
+            $cond_value = mysqli_real_escape_string($conn, $condition['value']);
+            if ($cond_on === "id") {
+                $ref_id = $cond_value;
+            }
+        }
 
         foreach ($rules as $rule) {
             if ($rule === 'required' && empty($value)) {
                 return "Field '$key' is required.";
+            } elseif ($rule === 'string' && !is_string($value)) {
+                return "Field '$key' must be a string.";
+            } elseif ($rule === 'name' && !preg_match('/^[a-zA-Z\s]+$/', $value)) {
+                return "Field '$key' must contain only letters and spaces.";
             } elseif ($rule === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                 return "Invalid email format for field '$key'.";
             } elseif ($rule === 'numeric' && !is_numeric($value)) {
@@ -69,7 +82,11 @@ function validateData($data, $validationRules, $conn, $table)
                     }
                 }
             } elseif ($rule === 'unique') {
-                $result = $conn->query("SELECT $key FROM $table WHERE $key = '$value'");
+                $stmt = $conn->prepare("SELECT $key FROM $table WHERE $key = ? AND id != ?");
+                $stmt->bind_param("si", $value, $ref_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
                 if ($result && $result->num_rows > 0) {
                     return "Field '$key' must be unique.";
                 }

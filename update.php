@@ -46,7 +46,7 @@ try {
 
     // Perform validation if 'validation' parameter exists in the request data
     if (isset($requestData['validation'])) {
-        $validationResult = validateData($requestData['data'][0], $requestData['validation'][0], $conn, $requestData['table']);
+        $validationResult = validateData($requestData['data'][0], $requestData['validation'][0], $conn, $requestData['table'], $requestData['conditions']);
         if ($validationResult !== null) {
             throw new Exception($validationResult);
         }
